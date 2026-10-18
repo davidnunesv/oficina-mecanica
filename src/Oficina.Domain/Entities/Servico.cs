@@ -10,6 +10,25 @@ public class Servico
 
     public Servico(string nome, string descricao, decimal preco)
     {
+        var dados = ValidateData(nome, descricao, preco);
+
+        Id = Guid.NewGuid();
+        Nome = dados.Nome;
+        Descricao = dados.Descricao;
+        Preco = dados.Preco;
+    }
+
+    public void Update(string nome, string descricao, decimal preco)
+    {
+        var dados = ValidateData(nome, descricao, preco);
+
+        Nome = dados.Nome;
+        Descricao = dados.Descricao;
+        Preco = dados.Preco;
+    }
+
+    private static (string Nome, string Descricao, decimal Preco) ValidateData(string nome, string descricao, decimal preco)
+    {
         if (string.IsNullOrWhiteSpace(nome))
             throw new ArgumentException("O nome do serviço é obrigatório.", nameof(nome));
 
@@ -19,9 +38,6 @@ public class Servico
         if (preco <= 0)
             throw new ArgumentException("O preço do serviço deve ser maior que zero.", nameof(preco));
 
-        Id = Guid.NewGuid();
-        Nome = nome.Trim();
-        Descricao = descricao.Trim();
-        Preco = preco;
+        return (nome.Trim(), descricao.Trim(), preco);
     }
 }

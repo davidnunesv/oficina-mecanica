@@ -58,4 +58,75 @@ public class ServicoTests
         Assert.Equal("Alinhamento", servico.Nome);
         Assert.Equal("Alinhamento das rodas", servico.Descricao);
     }
+
+
+    [Fact]
+    public void DeveAtualizarDadosDoServico()
+    {
+        var servico = new Servico("Alinhamento", "Alinhamento das rodas", 100m);
+        var idOriginal = servico.Id;
+
+        servico.Update("Balanceamento", "Balanceamento das rodas", 120m);
+
+        Assert.Equal(idOriginal, servico.Id);
+        Assert.Equal("Balanceamento", servico.Nome);
+        Assert.Equal("Balanceamento das rodas", servico.Descricao);
+        Assert.Equal(120m, servico.Preco);
+    }
+
+    [Fact]
+    public void DeveRemoverEspacosAoAtualizarServico()
+    {
+        var servico = new Servico("Alinhamento", "Alinhamento das rodas", 100m);
+
+        servico.Update("  Balanceamento  ", "  Balanceamento das rodas  ", 120m);
+
+        Assert.Equal("Balanceamento", servico.Nome);
+        Assert.Equal("Balanceamento das rodas", servico.Descricao);
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("   ")]
+    [InlineData(null)]
+    public void NaoDeveAtualizarServicoComNomeInvalido(string? nome)
+    {
+        var servico = new Servico("Alinhamento", "Alinhamento das rodas", 100m);
+
+        Assert.Throws<ArgumentException>(() => servico.Update(nome!, "Nova descrição", 150m));
+
+        Assert.Equal("Alinhamento", servico.Nome);
+        Assert.Equal("Alinhamento das rodas", servico.Descricao);
+        Assert.Equal(100m, servico.Preco);
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("   ")]
+    [InlineData(null)]
+    public void NaoDeveAtualizarServicoComDescricaoInvalida(string? descricao)
+    {
+        var servico = new Servico("Alinhamento", "Alinhamento das rodas", 100m);
+
+        Assert.Throws<ArgumentException>(() => servico.Update("Balanceamento", descricao!, 150m));
+
+        Assert.Equal("Alinhamento", servico.Nome);
+        Assert.Equal("Alinhamento das rodas", servico.Descricao);
+        Assert.Equal(100m, servico.Preco);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-10)]
+    public void NaoDeveAtualizarServicoComPrecoInvalido(int preco)
+    {
+        var servico = new Servico("Alinhamento", "Alinhamento das rodas", 100m);
+
+        Assert.Throws<ArgumentException>(() => servico.Update("Balanceamento", "Nova descrição", preco));
+
+        Assert.Equal("Alinhamento", servico.Nome);
+        Assert.Equal("Alinhamento das rodas", servico.Descricao);
+        Assert.Equal(100m, servico.Preco);
+    }
+
 }
