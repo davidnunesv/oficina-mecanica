@@ -1,4 +1,5 @@
-﻿using Oficina.Domain.ValueObjects;
+﻿using Oficina.Domain.Enums;
+using Oficina.Domain.ValueObjects;
 
 namespace Oficina.UnitTests.ValueObjects
 {

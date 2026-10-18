@@ -1,15 +1,7 @@
-﻿using System;
-using System.Linq;
+﻿using Oficina.Domain.Enums;
 
 namespace Oficina.Domain.ValueObjects
 {
-    public enum TipoDocumento
-    {
-        Cpf,
-        Cnpj
-    }
-
-
     public sealed record Documento
     {
         public string Valor { get; }
