@@ -103,4 +103,32 @@ public class VeiculoTests
         Assert.Equal("Ford", veiculo.Marca);
         Assert.Equal("Ka", veiculo.Modelo);
     }
+
+
+    [Fact]
+    public void DeveAtualizarDadosDoVeiculo()
+    {
+        var veiculo = new Veiculo(Guid.NewGuid(), new Placa("ABC1234"), "Ford", "Ka", 2019);
+
+        veiculo.Update(new Placa("BRA2E19"), "Fiat", "Uno", 2020);
+
+        Assert.Equal("BRA2E19", veiculo.Placa.Valor);
+        Assert.Equal("Fiat", veiculo.Marca);
+        Assert.Equal("Uno", veiculo.Modelo);
+        Assert.Equal(2020, veiculo.Ano);
+    }
+
+    [Fact]
+    public void NaoDeveAlterarDadosQuandoMarcaForInvalida()
+    {
+        var veiculo = new Veiculo(Guid.NewGuid(), new Placa("ABC1234"), "Ford", "Ka", 2019);
+
+        Assert.Throws<ArgumentException>(() => veiculo.Update(new Placa("BRA2E19"), "", "Uno", 2020));
+
+        Assert.Equal("ABC1234", veiculo.Placa.Valor);
+        Assert.Equal("Ford", veiculo.Marca);
+        Assert.Equal("Ka", veiculo.Modelo);
+        Assert.Equal(2019, veiculo.Ano);
+    }
+
 }

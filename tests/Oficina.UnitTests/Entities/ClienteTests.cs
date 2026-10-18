@@ -69,4 +69,69 @@ public class ClienteTests
         // Assert
         Assert.Equal("David Nunes", cliente.Nome);
     }
+
+
+    [Fact]
+    public void DeveAtualizarDadosDoCliente()
+    {
+        var cliente = new Cliente("David Nunes", new Documento("52998224725"));
+        var novoDocumento = new Documento("12ABC34501DE35");
+
+        cliente.Update("David Vieira", novoDocumento);
+
+        Assert.Equal("David Vieira", cliente.Nome);
+        Assert.Equal(novoDocumento, cliente.Documento);
+        Assert.Equal("12ABC34501DE35", cliente.Documento.Valor);
+    }
+
+    [Fact]
+    public void DeveAtualizarNomeMantendoDocumento()
+    {
+        var documento = new Documento("52998224725");
+        var cliente = new Cliente("David Nunes", documento);
+
+        cliente.Update("David Vieira", documento);
+
+        Assert.Equal("David Vieira", cliente.Nome);
+        Assert.Equal(documento, cliente.Documento);
+    }
+
+    [Fact]
+    public void DeveRemoverEspacosAoAtualizarNome()
+    {
+        var cliente = new Cliente("David Nunes", new Documento("52998224725"));
+
+        cliente.Update("  David Vieira  ", cliente.Documento);
+
+        Assert.Equal("David Vieira", cliente.Nome);
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("   ")]
+    [InlineData(null)]
+    public void NaoDeveAtualizarClienteComNomeInvalido(string? nome)
+    {
+        var documentoOriginal = new Documento("52998224725");
+        var cliente = new Cliente("David Nunes", documentoOriginal);
+        var novoDocumento = new Documento("12ABC34501DE35");
+
+        Assert.Throws<ArgumentException>(() => cliente.Update(nome!, novoDocumento));
+
+        Assert.Equal("David Nunes", cliente.Nome);
+        Assert.Equal(documentoOriginal, cliente.Documento);
+    }
+
+    [Fact]
+    public void NaoDeveAtualizarClienteComDocumentoNulo()
+    {
+        var documentoOriginal = new Documento("52998224725");
+        var cliente = new Cliente("David Nunes", documentoOriginal);
+
+        Assert.Throws<ArgumentNullException>(() => cliente.Update("David Vieira", null!));
+
+        Assert.Equal("David Nunes", cliente.Nome);
+        Assert.Equal(documentoOriginal, cliente.Documento);
+    }
+
 }
