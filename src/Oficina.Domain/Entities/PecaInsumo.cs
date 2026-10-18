@@ -13,16 +13,23 @@ public class PecaInsumo
 
     public PecaInsumo(string nome, decimal preco)
     {
-        if (string.IsNullOrWhiteSpace(nome))
-            throw new ArgumentException("O nome da peça é obrigatório.", nameof(nome));
-
-        if (preco <= 0)
-            throw new ArgumentException("O preço da peça deve ser maior que zero.", nameof(preco));
+        var dados = ValidateData(nome, preco);
 
         Id = Guid.NewGuid();
-        Nome = nome.Trim();
-        Preco = preco;
+        Nome = dados.Nome;
+        Preco = dados.Preco;
         Status = StatusPecaInsumo.Disponivel;
+    }
+
+    public void Update(string nome, decimal preco)
+    {
+        if (Status != StatusPecaInsumo.Disponivel)
+            throw new InvalidOperationException("Somente peças disponíveis podem ser atualizadas.");
+
+        var dados = ValidateData(nome, preco);
+
+        Nome = dados.Nome;
+        Preco = dados.Preco;
     }
 
     public void Reservar(Guid ordemServicoId)
@@ -49,5 +56,16 @@ public class PecaInsumo
             throw new InvalidOperationException("A peça está reservada para outra Ordem de Serviço.");
 
         Status = StatusPecaInsumo.Consumida;
+    }
+
+    private static (string Nome, decimal Preco) ValidateData(string nome, decimal preco)
+    {
+        if (string.IsNullOrWhiteSpace(nome))
+            throw new ArgumentException("O nome da peça é obrigatório.", nameof(nome));
+
+        if (preco <= 0)
+            throw new ArgumentException("O preço da peça deve ser maior que zero.", nameof(preco));
+
+        return (nome.Trim(), preco);
     }
 }
