@@ -346,7 +346,7 @@ public class ClienteApplicationServiceTests
             return Task.CompletedTask;
         }
 
-        public Task<bool> PossuiVinculosAsync(Guid clienteId, CancellationToken cancellationToken = default)
+        public Task<bool> HasDependenciesAsync(Guid clienteId, CancellationToken cancellationToken = default)
         {
             return Task.FromResult(ClientesComVinculos.Contains(clienteId));
         }

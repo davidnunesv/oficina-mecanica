@@ -79,7 +79,7 @@ public class ClienteApplicationService(IClienteRepository clienteRepository)
         if (cliente is null)
             return false;
 
-        if (await _clienteRepository.PossuiVinculosAsync(clienteId, cancellationToken))
+        if (await _clienteRepository.HasDependenciesAsync(clienteId, cancellationToken))
             throw new InvalidOperationException("Não é possível excluir um cliente que possui veículos ou ordens de serviço vinculados.");
 
         await _clienteRepository.DeleteAsync(cliente, cancellationToken);
