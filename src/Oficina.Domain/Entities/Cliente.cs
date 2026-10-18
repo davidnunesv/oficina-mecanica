@@ -19,4 +19,16 @@ public class Cliente
         Nome = nome.Trim();
         Documento = documento;
     }
+
+
+    public void Update(string nome, Documento documento)
+    {
+        if (string.IsNullOrWhiteSpace(nome))
+            throw new ArgumentException("O nome do cliente é obrigatório.", nameof(nome));
+
+        ArgumentNullException.ThrowIfNull(documento);
+
+        Nome = nome.Trim();
+        Documento = documento;
+    }
 }
