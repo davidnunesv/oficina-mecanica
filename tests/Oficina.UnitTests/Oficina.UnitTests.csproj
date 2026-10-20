@@ -23,4 +23,8 @@
     <ProjectReference Include="..\..\src\Oficina.Application\Oficina.Application.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="UseCases\" />
+  </ItemGroup>
+
 </Project>

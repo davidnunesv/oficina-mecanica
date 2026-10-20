@@ -199,7 +199,7 @@ public class ServicoApplicationServiceTests
         var servicoId = await service.CreateAsync("Alinhamento", "Alinhamento das rodas", 100m);
 
         var os = new OrdemServico(Guid.NewGuid(), Guid.NewGuid());
-        os.IniciarDiagnostico();
+        os.CreateDiagnostic();
         os.AdicionarServico(servicoId, 1, 100m);
 
         await service.UpdateAsync(servicoId, "Alinhamento", "Alinhamento das rodas", 120m);

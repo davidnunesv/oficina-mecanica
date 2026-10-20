@@ -34,7 +34,7 @@ public class OrdemServico
         Status = StatusOS.Recebida;
     }
 
-    public void IniciarDiagnostico()
+    public void CreateDiagnostic()
     {
         if (Status != StatusOS.Recebida)
             throw new InvalidOperationException("O diagnóstico só pode ser iniciado quando a OS estiver recebida.");
@@ -100,7 +100,7 @@ public class OrdemServico
     }
 
 
-    public void RegistrarDiagnostico(string descricao)
+    public void AddDiagnostic(string descricao)
     {
         if (Status != StatusOS.EmDiagnostico)
             throw new InvalidOperationException("O diagnóstico só pode ser registrado durante a etapa de diagnóstico.");

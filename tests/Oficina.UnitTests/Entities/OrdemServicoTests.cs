@@ -32,22 +32,22 @@ public class OrdemServicoTests
     }
 
     [Fact]
-    public void DeveIniciarDiagnostico()
+    public void DeveCreateDiagnostic()
     {
         var os = new OrdemServico(Guid.NewGuid(), Guid.NewGuid());
 
-        os.IniciarDiagnostico();
+        os.CreateDiagnostic();
 
         Assert.Equal(StatusOS.EmDiagnostico, os.Status);
     }
 
     [Fact]
-    public void NaoDevePermitirIniciarDiagnosticoDuasVezes()
+    public void NaoDevePermitirCreateDiagnosticDuasVezes()
     {
         var os = new OrdemServico(Guid.NewGuid(), Guid.NewGuid());
-        os.IniciarDiagnostico();
+        os.CreateDiagnostic();
 
-        Assert.Throws<InvalidOperationException>(() => os.IniciarDiagnostico());
+        Assert.Throws<InvalidOperationException>(() => os.CreateDiagnostic());
     }
 
 
@@ -57,7 +57,7 @@ public class OrdemServicoTests
         var os = new OrdemServico(Guid.NewGuid(), Guid.NewGuid());
         var servicoId = Guid.NewGuid();
 
-        os.IniciarDiagnostico();
+        os.CreateDiagnostic();
         os.AdicionarServico(servicoId, 2, 100m);
 
         var item = Assert.Single(os.ItensServico);
@@ -83,7 +83,7 @@ public class OrdemServicoTests
     public void NaoDeveAdicionarServicoComIdVazio()
     {
         var os = new OrdemServico(Guid.NewGuid(), Guid.NewGuid());
-        os.IniciarDiagnostico();
+        os.CreateDiagnostic();
 
         Assert.Throws<ArgumentException>(() => os.AdicionarServico(Guid.Empty, 1, 100m));
 
@@ -96,7 +96,7 @@ public class OrdemServicoTests
     public void NaoDeveAdicionarServicoComQuantidadeInvalida(int quantidade)
     {
         var os = new OrdemServico(Guid.NewGuid(), Guid.NewGuid());
-        os.IniciarDiagnostico();
+        os.CreateDiagnostic();
 
         Assert.Throws<ArgumentException>(() => os.AdicionarServico(Guid.NewGuid(), quantidade, 100m));
 
@@ -109,7 +109,7 @@ public class OrdemServicoTests
     public void NaoDeveAdicionarServicoComPrecoInvalido(int preco)
     {
         var os = new OrdemServico(Guid.NewGuid(), Guid.NewGuid());
-        os.IniciarDiagnostico();
+        os.CreateDiagnostic();
 
         Assert.Throws<ArgumentException>(() => os.AdicionarServico(Guid.NewGuid(), 1, preco));
 
@@ -120,7 +120,7 @@ public class OrdemServicoTests
     public void DevePermitirAdicionarMaisDeUmServico()
     {
         var os = new OrdemServico(Guid.NewGuid(), Guid.NewGuid());
-        os.IniciarDiagnostico();
+        os.CreateDiagnostic();
 
         os.AdicionarServico(Guid.NewGuid(), 1, 100m);
         os.AdicionarServico(Guid.NewGuid(), 1, 80m);
@@ -137,7 +137,7 @@ public class OrdemServicoTests
         var os = new OrdemServico(Guid.NewGuid(), Guid.NewGuid());
         var pecaId = Guid.NewGuid();
 
-        os.IniciarDiagnostico();
+        os.CreateDiagnostic();
         os.AdicionarPeca(pecaId, 35m);
 
         var item = Assert.Single(os.ItensPeca);
@@ -161,7 +161,7 @@ public class OrdemServicoTests
     public void NaoDeveAdicionarPecaComIdVazio()
     {
         var os = new OrdemServico(Guid.NewGuid(), Guid.NewGuid());
-        os.IniciarDiagnostico();
+        os.CreateDiagnostic();
 
         Assert.Throws<ArgumentException>(() => os.AdicionarPeca(Guid.Empty, 35m));
 
@@ -174,7 +174,7 @@ public class OrdemServicoTests
     public void NaoDeveAdicionarPecaComPrecoInvalido(int preco)
     {
         var os = new OrdemServico(Guid.NewGuid(), Guid.NewGuid());
-        os.IniciarDiagnostico();
+        os.CreateDiagnostic();
 
         Assert.Throws<ArgumentException>(() => os.AdicionarPeca(Guid.NewGuid(), preco));
 
@@ -187,7 +187,7 @@ public class OrdemServicoTests
         var os = new OrdemServico(Guid.NewGuid(), Guid.NewGuid());
         var pecaId = Guid.NewGuid();
 
-        os.IniciarDiagnostico();
+        os.CreateDiagnostic();
         os.AdicionarPeca(pecaId, 35m);
 
         Assert.Throws<InvalidOperationException>(() => os.AdicionarPeca(pecaId, 35m));
@@ -199,7 +199,7 @@ public class OrdemServicoTests
     public void DevePermitirDuasUnidadesDiferentes()
     {
         var os = new OrdemServico(Guid.NewGuid(), Guid.NewGuid());
-        os.IniciarDiagnostico();
+        os.CreateDiagnostic();
 
         os.AdicionarPeca(Guid.NewGuid(), 35m);
         os.AdicionarPeca(Guid.NewGuid(), 35m);
@@ -213,7 +213,7 @@ public class OrdemServicoTests
     public void DeveGerarOrcamentoComServicosEPecas()
     {
         var os = new OrdemServico(Guid.NewGuid(), Guid.NewGuid());
-        os.IniciarDiagnostico();
+        os.CreateDiagnostic();
 
         os.AdicionarServico(Guid.NewGuid(), 2, 100m);
         os.AdicionarPeca(Guid.NewGuid(), 35m);
@@ -233,7 +233,7 @@ public class OrdemServicoTests
     public void DeveGerarOrcamentoApenasComServicos()
     {
         var os = new OrdemServico(Guid.NewGuid(), Guid.NewGuid());
-        os.IniciarDiagnostico();
+        os.CreateDiagnostic();
         os.AdicionarServico(Guid.NewGuid(), 1, 120m);
 
         os.GerarOrcamento();
@@ -248,7 +248,7 @@ public class OrdemServicoTests
     public void DeveGerarOrcamentoApenasComPecas()
     {
         var os = new OrdemServico(Guid.NewGuid(), Guid.NewGuid());
-        os.IniciarDiagnostico();
+        os.CreateDiagnostic();
         os.AdicionarPeca(Guid.NewGuid(), 35m);
 
         os.GerarOrcamento();
@@ -274,7 +274,7 @@ public class OrdemServicoTests
     public void NaoDeveGerarOrcamentoSemItens()
     {
         var os = new OrdemServico(Guid.NewGuid(), Guid.NewGuid());
-        os.IniciarDiagnostico();
+        os.CreateDiagnostic();
 
         Assert.Throws<InvalidOperationException>(() => os.GerarOrcamento());
 
@@ -286,7 +286,7 @@ public class OrdemServicoTests
     public void NaoDeveGerarOrcamentoDuasVezes()
     {
         var os = new OrdemServico(Guid.NewGuid(), Guid.NewGuid());
-        os.IniciarDiagnostico();
+        os.CreateDiagnostic();
         os.AdicionarServico(Guid.NewGuid(), 1, 100m);
         os.GerarOrcamento();
 
@@ -301,7 +301,7 @@ public class OrdemServicoTests
     public void NaoDeveAdicionarServicoAposGerarOrcamento()
     {
         var os = new OrdemServico(Guid.NewGuid(), Guid.NewGuid());
-        os.IniciarDiagnostico();
+        os.CreateDiagnostic();
         os.AdicionarServico(Guid.NewGuid(), 1, 100m);
         os.GerarOrcamento();
 
@@ -315,7 +315,7 @@ public class OrdemServicoTests
     public void NaoDeveAdicionarPecaAposGerarOrcamento()
     {
         var os = new OrdemServico(Guid.NewGuid(), Guid.NewGuid());
-        os.IniciarDiagnostico();
+        os.CreateDiagnostic();
         os.AdicionarPeca(Guid.NewGuid(), 35m);
         os.GerarOrcamento();
 
@@ -330,7 +330,7 @@ public class OrdemServicoTests
     public void DeveAprovarOrcamentoPendente()
     {
         var os = new OrdemServico(Guid.NewGuid(), Guid.NewGuid());
-        os.IniciarDiagnostico();
+        os.CreateDiagnostic();
         os.AdicionarServico(Guid.NewGuid(), 1, 100m);
         os.GerarOrcamento();
 
@@ -343,7 +343,7 @@ public class OrdemServicoTests
     public void DeveRejeitarOrcamentoPendente()
     {
         var os = new OrdemServico(Guid.NewGuid(), Guid.NewGuid());
-        os.IniciarDiagnostico();
+        os.CreateDiagnostic();
         os.AdicionarServico(Guid.NewGuid(), 1, 100m);
         os.GerarOrcamento();
 
@@ -376,7 +376,7 @@ public class OrdemServicoTests
     public void NaoDeveAprovarOrcamentoDuasVezes()
     {
         var os = new OrdemServico(Guid.NewGuid(), Guid.NewGuid());
-        os.IniciarDiagnostico();
+        os.CreateDiagnostic();
         os.AdicionarServico(Guid.NewGuid(), 1, 100m);
         os.GerarOrcamento();
         os.AprovarOrcamento();
@@ -390,7 +390,7 @@ public class OrdemServicoTests
     public void NaoDeveRejeitarOrcamentoDuasVezes()
     {
         var os = new OrdemServico(Guid.NewGuid(), Guid.NewGuid());
-        os.IniciarDiagnostico();
+        os.CreateDiagnostic();
         os.AdicionarServico(Guid.NewGuid(), 1, 100m);
         os.GerarOrcamento();
         os.RejeitarOrcamento();
@@ -404,7 +404,7 @@ public class OrdemServicoTests
     public void NaoDeveAprovarOrcamentoRejeitado()
     {
         var os = new OrdemServico(Guid.NewGuid(), Guid.NewGuid());
-        os.IniciarDiagnostico();
+        os.CreateDiagnostic();
         os.AdicionarServico(Guid.NewGuid(), 1, 100m);
         os.GerarOrcamento();
         os.RejeitarOrcamento();
@@ -418,7 +418,7 @@ public class OrdemServicoTests
     public void NaoDeveRejeitarOrcamentoAprovado()
     {
         var os = new OrdemServico(Guid.NewGuid(), Guid.NewGuid());
-        os.IniciarDiagnostico();
+        os.CreateDiagnostic();
         os.AdicionarServico(Guid.NewGuid(), 1, 100m);
         os.GerarOrcamento();
         os.AprovarOrcamento();
@@ -433,12 +433,12 @@ public class OrdemServicoTests
 
 
     [Fact]
-    public void DeveRegistrarDiagnostico()
+    public void DeveAddDiagnostic()
     {
         var os = new OrdemServico(Guid.NewGuid(), Guid.NewGuid());
-        os.IniciarDiagnostico();
+        os.CreateDiagnostic();
 
-        os.RegistrarDiagnostico("Desgaste nas pastilhas de freio.");
+        os.AddDiagnostic("Desgaste nas pastilhas de freio.");
 
         Assert.NotNull(os.Diagnostico);
         Assert.NotEqual(Guid.Empty, os.Diagnostico.Id);
@@ -451,51 +451,51 @@ public class OrdemServicoTests
     [InlineData("")]
     [InlineData("   ")]
     [InlineData(null)]
-    public void NaoDeveRegistrarDiagnosticoSemDescricao(string? descricao)
+    public void NaoDeveAddDiagnosticSemDescricao(string? descricao)
     {
         var os = new OrdemServico(Guid.NewGuid(), Guid.NewGuid());
-        os.IniciarDiagnostico();
+        os.CreateDiagnostic();
 
-        Assert.Throws<ArgumentException>(() => os.RegistrarDiagnostico(descricao!));
+        Assert.Throws<ArgumentException>(() => os.AddDiagnostic(descricao!));
 
         Assert.Null(os.Diagnostico);
     }
 
     [Fact]
-    public void NaoDeveRegistrarDiagnosticoAntesDeIniciar()
+    public void NaoDeveAddDiagnosticAntesDeIniciar()
     {
         var os = new OrdemServico(Guid.NewGuid(), Guid.NewGuid());
 
-        Assert.Throws<InvalidOperationException>(() => os.RegistrarDiagnostico("Desgaste nas pastilhas."));
+        Assert.Throws<InvalidOperationException>(() => os.AddDiagnostic("Desgaste nas pastilhas."));
 
         Assert.Null(os.Diagnostico);
         Assert.Equal(StatusOS.Recebida, os.Status);
     }
 
     [Fact]
-    public void NaoDeveRegistrarDiagnosticoDuasVezes()
+    public void NaoDeveAddDiagnosticDuasVezes()
     {
         var os = new OrdemServico(Guid.NewGuid(), Guid.NewGuid());
-        os.IniciarDiagnostico();
-        os.RegistrarDiagnostico("Primeiro diagnóstico.");
+        os.CreateDiagnostic();
+        os.AddDiagnostic("Primeiro diagnóstico.");
 
         var diagnosticoId = os.Diagnostico!.Id;
 
-        Assert.Throws<InvalidOperationException>(() => os.RegistrarDiagnostico("Segundo diagnóstico."));
+        Assert.Throws<InvalidOperationException>(() => os.AddDiagnostic("Segundo diagnóstico."));
 
         Assert.Equal(diagnosticoId, os.Diagnostico.Id);
         Assert.Equal("Primeiro diagnóstico.", os.Diagnostico.Descricao);
     }
 
     [Fact]
-    public void NaoDeveRegistrarDiagnosticoAposGerarOrcamento()
+    public void NaoDeveAddDiagnosticAposGerarOrcamento()
     {
         var os = new OrdemServico(Guid.NewGuid(), Guid.NewGuid());
-        os.IniciarDiagnostico();
+        os.CreateDiagnostic();
         os.AdicionarServico(Guid.NewGuid(), 1, 100m);
         os.GerarOrcamento();
 
-        Assert.Throws<InvalidOperationException>(() => os.RegistrarDiagnostico("Diagnóstico tardio."));
+        Assert.Throws<InvalidOperationException>(() => os.AddDiagnostic("Diagnóstico tardio."));
 
         Assert.Null(os.Diagnostico);
     }
@@ -504,19 +504,19 @@ public class OrdemServicoTests
     public void DeveRemoverEspacosDaDescricaoDoDiagnostico()
     {
         var os = new OrdemServico(Guid.NewGuid(), Guid.NewGuid());
-        os.IniciarDiagnostico();
+        os.CreateDiagnostic();
 
-        os.RegistrarDiagnostico("  Desgaste nas pastilhas.  ");
+        os.AddDiagnostic("  Desgaste nas pastilhas.  ");
 
         Assert.Equal("Desgaste nas pastilhas.", os.Diagnostico!.Descricao);
     }
 
     [Fact]
-    public void DevePermitirGerarOrcamentoAposRegistrarDiagnostico()
+    public void DevePermitirGerarOrcamentoAposAddDiagnostic()
     {
         var os = new OrdemServico(Guid.NewGuid(), Guid.NewGuid());
-        os.IniciarDiagnostico();
-        os.RegistrarDiagnostico("Necessária troca do filtro de óleo.");
+        os.CreateDiagnostic();
+        os.AddDiagnostic("Necessária troca do filtro de óleo.");
         os.AdicionarServico(Guid.NewGuid(), 1, 120m);
         os.AdicionarPeca(Guid.NewGuid(), 35m);
 
@@ -535,7 +535,7 @@ public class OrdemServicoTests
     {
         var os = new OrdemServico(Guid.NewGuid(), Guid.NewGuid());
 
-        os.IniciarDiagnostico();
+        os.CreateDiagnostic();
         os.AdicionarServico(Guid.NewGuid(), 1, 100m);
         os.GerarOrcamento();
 
@@ -700,8 +700,8 @@ public class OrdemServicoTests
         var os = new OrdemServico(clienteId, veiculoId);
 
         // Diagnóstico
-        os.IniciarDiagnostico();
-        os.RegistrarDiagnostico("Necessária troca do óleo e do filtro.");
+        os.CreateDiagnostic();
+        os.AddDiagnostic("Necessária troca do óleo e do filtro.");
 
         // Serviços e peças
         os.AdicionarServico(Guid.NewGuid(), 1, 120m);
@@ -739,7 +739,7 @@ public class OrdemServicoTests
         var peca = new PecaInsumo("Filtro de óleo", 35m);
         var os = new OrdemServico(Guid.NewGuid(), Guid.NewGuid());
 
-        os.IniciarDiagnostico();
+        os.CreateDiagnostic();
         os.AdicionarPeca(peca.Id, peca.Preco);
         os.GerarOrcamento();
 
