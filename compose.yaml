@@ -1,0 +1,20 @@
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: oficina-sqlserver
+    restart: unless-stopped
+
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: "Developer"
+      MSSQL_SA_PASSWORD: "${MSSQL_SA_PASSWORD:?Defina MSSQL_SA_PASSWORD no arquivo .env}"
+
+    ports:
+      - "127.0.0.1:14333:1433"
+
+    volumes:
+      - oficina_sql_data:/var/opt/mssql
+
+volumes:
+  oficina_sql_data:
