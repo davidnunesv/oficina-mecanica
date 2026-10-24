@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <PackageReference Include="coverlet.collector" Version="6.0.4" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.13" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.13" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.0" />
     <PackageReference Include="xunit" Version="2.9.3" />
@@ -26,6 +27,7 @@
     <ProjectReference Include="..\..\src\Oficina.Infrastructure\Oficina.Infrastructure.csproj" />
     <ProjectReference Include="..\..\src\Oficina.Domain\Oficina.Domain.csproj" />
     <ProjectReference Include="..\..\src\Oficina.Application\Oficina.Application.csproj" />
+    <ProjectReference Include="..\..\src\Oficina.Api\Oficina.Api.csproj" />
   </ItemGroup>
 
 </Project>
