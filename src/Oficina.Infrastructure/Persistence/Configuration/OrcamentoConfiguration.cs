@@ -26,5 +26,7 @@ public class OrcamentoConfiguration : IEntityTypeConfiguration<Orcamento>
         builder.Property<Guid>("OrdemServicoId").IsRequired();
 
         builder.Ignore(o => o.ValorTotal);
+
+        builder.Property<byte[]>("RowVersion").IsRowVersion();
     }
 }
