@@ -15,7 +15,7 @@ public sealed class VeiculosController(VeiculoApplicationService service) : Cont
         return Ok(await service.ListAsync(ct));
     }
 
-    [HttpGet("{id:guid}")]
+    [HttpGet("{id:guid}", Name = "GetVeiculoById")]
     public async Task<IActionResult> GetByIdAsync(Guid id, CancellationToken ct)
     {
         var veiculo = await service.GetByIdAsync(id, ct);
@@ -30,7 +30,7 @@ public sealed class VeiculosController(VeiculoApplicationService service) : Cont
             request.ClienteId, request.Placa, request.Marca,
             request.Modelo, request.Ano, ct);
 
-        return CreatedAtAction(nameof(GetByIdAsync), new { id }, new { id });
+        return CreatedAtRoute("GetVeiculoById", new { id }, new { id });
     }
 
     [HttpPut("{id:guid}")]

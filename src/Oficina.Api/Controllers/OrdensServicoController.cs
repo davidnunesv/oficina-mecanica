@@ -19,7 +19,7 @@ public sealed class OrdensServicoController(
         return Ok(await service.ListAsync(ct));
     }
 
-    [HttpGet("{id:guid}")]
+    [HttpGet("{id:guid}", Name = "GetOrdemServicoById")]
     public async Task<IActionResult> GetByIdAsync(Guid id, CancellationToken ct)
     {
         var os = await service.GetByIdAsync(id, ct);
@@ -42,11 +42,13 @@ public sealed class OrdensServicoController(
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateAsync([FromBody] CriarOrdemServicoRequest request, CancellationToken ct)
+    public async Task<IActionResult> CreateAsync(
+    [FromBody] CriarOrdemServicoRequest request,
+    CancellationToken ct)
     {
         var id = await service.CreateAsync(request.ClienteId, request.VeiculoId, ct);
 
-        return CreatedAtAction(nameof(GetByIdAsync), new { id }, new { id });
+        return CreatedAtRoute("GetOrdemServicoById", new { id }, new { id });
     }
 
     [HttpPost("{id:guid}/diagnostico/iniciar")]

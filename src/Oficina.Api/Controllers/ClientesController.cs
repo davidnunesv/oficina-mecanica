@@ -15,7 +15,7 @@ public sealed class ClientesController(ClienteApplicationService service) : Cont
         return Ok(await service.ListAsync(ct));
     }
 
-    [HttpGet("{id:guid}")]
+    [HttpGet("{id:guid}", Name = "GetClienteById")]
     public async Task<IActionResult> GetByIdAsync(Guid id, CancellationToken ct)
     {
         var cliente = await service.GetByIdAsync(id, ct);
@@ -28,7 +28,7 @@ public sealed class ClientesController(ClienteApplicationService service) : Cont
     {
         var id = await service.CreateAsync(request.Nome, request.Documento, ct);
 
-        return CreatedAtAction(nameof(GetByIdAsync), new { id }, new { id });
+        return CreatedAtRoute("GetClienteById", new { id }, new { id });
     }
 
     [HttpPut("{id:guid}")]

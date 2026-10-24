@@ -72,8 +72,16 @@ public class ClientesHttpIntegrationTests(SqlServerTestDatabase database)
         }
         finally
         {
-            if (id != Guid.Empty)
-                await database.CleanupAsync(clienteId: id);
+            await using var context = database.CreateContext();
+
+            var clienteId = await context.Clientes
+                .AsNoTracking()
+                .Where(c => c.Documento == cliente.Documento)
+                .Select(c => c.Id)
+                .FirstOrDefaultAsync();
+
+            if (clienteId != Guid.Empty)
+                await database.CleanupAsync(clienteId: clienteId);
         }
     }
 

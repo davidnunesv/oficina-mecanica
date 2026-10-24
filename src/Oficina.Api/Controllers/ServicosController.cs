@@ -15,7 +15,7 @@ public sealed class ServicosController(ServicoApplicationService service) : Cont
         return Ok(await service.ListAsync(ct));
     }
 
-    [HttpGet("{id:guid}")]
+    [HttpGet("{id:guid}", Name = "GetServicoById")]
     public async Task<IActionResult> GetByIdAsync(Guid id, CancellationToken ct)
     {
         var servico = await service.GetByIdAsync(id, ct);
@@ -28,7 +28,7 @@ public sealed class ServicosController(ServicoApplicationService service) : Cont
     {
         var id = await service.CreateAsync(request.Nome, request.Descricao, request.Preco, ct);
 
-        return CreatedAtAction(nameof(GetByIdAsync), new { id }, new { id });
+        return CreatedAtRoute("GetServicoById", new { id }, new { id });
     }
 
     [HttpPut("{id:guid}")]

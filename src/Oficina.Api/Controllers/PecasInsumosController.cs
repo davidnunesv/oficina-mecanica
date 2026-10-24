@@ -15,7 +15,7 @@ public sealed class PecasInsumosController(PecaInsumoApplicationService service)
         return Ok(await service.ListAsync(ct));
     }
 
-    [HttpGet("{id:guid}")]
+    [HttpGet("{id:guid}", Name = "GetPecaInsumoById")]
     public async Task<IActionResult> GetByIdAsync(Guid id, CancellationToken ct)
     {
         var peca = await service.GetByIdAsync(id, ct);
@@ -28,7 +28,7 @@ public sealed class PecasInsumosController(PecaInsumoApplicationService service)
     {
         var id = await service.CreateAsync(request.Nome, request.Preco, ct);
 
-        return CreatedAtAction(nameof(GetByIdAsync), new { id }, new { id });
+        return CreatedAtRoute("GetPecaInsumoById", new { id }, new { id });
     }
 
     [HttpPut("{id:guid}")]
