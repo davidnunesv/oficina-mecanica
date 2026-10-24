@@ -52,7 +52,12 @@ public sealed class ServicoRequest
     [Required, MaxLength(1000)]
     public string Descricao { get; init; } = string.Empty;
 
-    [Range(typeof(decimal), "0.01", "9999999999999999.99")]
+    [Range(
+        typeof(decimal),
+        "0.01",
+        "9999999999999999.99",
+        ParseLimitsInInvariantCulture = true,
+        ErrorMessage = "O preço deve ser maior ou igual a R$ 0,01.")]
     public decimal Preco { get; init; }
 }
 
@@ -61,7 +66,12 @@ public sealed class PecaInsumoRequest
     [Required, MaxLength(150)]
     public string Nome { get; init; } = string.Empty;
 
-    [Range(typeof(decimal), "0.01", "9999999999999999.99")]
+    [Range(
+        typeof(decimal),
+        "0.01",
+        "9999999999999999.99",
+        ParseLimitsInInvariantCulture = true,
+        ErrorMessage = "O preço deve ser maior ou igual a R$ 0,01.")]
     public decimal Preco { get; init; }
 }
 
