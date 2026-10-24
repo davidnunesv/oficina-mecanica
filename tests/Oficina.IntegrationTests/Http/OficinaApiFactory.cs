@@ -158,4 +158,58 @@ public sealed class OficinaApiFactory : WebApplicationFactory<Program>
                 "Os testes HTTP devem utilizar exclusivamente o banco de integração.");
         }
     }
+
+
+    public HttpClient CriarClienteComTokenDeTeste(
+        string? role = "Admin",
+        string? clienteId = null,
+        DateTime? inicioValidadeUtc = null,
+        DateTime? expiracaoUtc = null,
+        string? emissor = null,
+        string? audiencia = null,
+        bool assinaturaIncorreta = false)
+    {
+        var client = CriarClienteSemToken();
+
+        var claims = new List<Claim>
+    {
+        new("sub", Guid.NewGuid().ToString("N"))
+    };
+
+        if (role is not null)
+            claims.Add(new Claim("role", role));
+
+        if (clienteId is not null)
+            claims.Add(new Claim("cliente_id", clienteId));
+
+        var chave = assinaturaIncorreta
+            ? new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
+                "ChaveAlternativaExclusivaParaTestesJwt2026NaoConfiavel"))
+            : SigningKey;
+
+        var agora = DateTime.UtcNow;
+
+        var descriptor = new SecurityTokenDescriptor
+        {
+            Subject = new ClaimsIdentity(claims),
+
+            Issuer = emissor ?? Issuer,
+            Audience = audiencia ?? Audience,
+
+            NotBefore = inicioValidadeUtc ?? agora.AddMinutes(-1),
+            Expires = expiracaoUtc ?? agora.AddMinutes(10),
+
+            SigningCredentials = new SigningCredentials(
+                chave,
+                SecurityAlgorithms.HmacSha256)
+        };
+
+        var token = new JsonWebTokenHandler().CreateToken(descriptor);
+
+        client.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", token);
+
+        return client;
+    }
+
 }

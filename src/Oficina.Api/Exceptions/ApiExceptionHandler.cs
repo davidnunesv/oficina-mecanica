@@ -38,8 +38,8 @@ public sealed class ApiExceptionHandler(ILogger<ApiExceptionHandler> logger) : I
 
             InvalidOperationException => (
                 StatusCodes.Status409Conflict,
-                "Regra de negócio não atendida",
-                exception.Message),
+                "Operação não permitida",
+                "A operação não pode ser realizada no estado atual do recurso."),
 
             _ => (
                 StatusCodes.Status500InternalServerError,

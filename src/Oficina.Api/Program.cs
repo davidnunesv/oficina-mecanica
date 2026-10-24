@@ -1,11 +1,12 @@
 
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.OpenApi;
 using Oficina.Api.Exceptions;
 using Oficina.Application.Services;
 using Oficina.Application.UseCases.OrdensServico;
 using Oficina.Infrastructure;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,8 +38,15 @@ builder.Services
     .AddJwtBearer();
 
 // Autorização
+
 builder.Services.AddAuthorization(options =>
 {
+    // Proteção por padrão para novos endpoints.
+    options.FallbackPolicy = new AuthorizationPolicyBuilder(
+        JwtBearerDefaults.AuthenticationScheme)
+        .RequireAuthenticatedUser()
+        .Build();
+
     options.AddPolicy("AdminOnly", policy =>
         policy.RequireAuthenticatedUser()
               .RequireRole("Admin"));
@@ -48,6 +56,7 @@ builder.Services.AddAuthorization(options =>
               .RequireRole("Cliente")
               .RequireClaim("cliente_id"));
 });
+
 
 
 // Swagger
