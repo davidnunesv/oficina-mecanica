@@ -53,6 +53,7 @@ services:
       <<: *db-environment
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_HTTP_PORTS: "8080"
+      DemoAuth__Enabled: "true"
 
     ports:
       - "127.0.0.1:8080:8080"
