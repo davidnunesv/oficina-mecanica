@@ -2,10 +2,12 @@
 using Microsoft.AspNetCore.Mvc;
 using Oficina.Api.Contracts;
 using Oficina.Application.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Oficina.Api.Controllers;
 
 [ApiController]
+[Authorize(Policy = "AdminOnly")]
 [Route("api/clientes")]
 public sealed class ClientesController(ClienteApplicationService service) : ControllerBase
 {

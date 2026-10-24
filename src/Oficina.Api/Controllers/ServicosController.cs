@@ -1,4 +1,5 @@
 ﻿
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Oficina.Api.Contracts;
 using Oficina.Application.Services;
@@ -6,6 +7,7 @@ using Oficina.Application.Services;
 namespace Oficina.Api.Controllers;
 
 [ApiController]
+[Authorize(Policy = "AdminOnly")]
 [Route("api/servicos")]
 public sealed class ServicosController(ServicoApplicationService service) : ControllerBase
 {

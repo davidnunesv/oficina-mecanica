@@ -27,11 +27,8 @@ public class ClientesHttpIntegrationTests(SqlServerTestDatabase database)
 
         try
         {
-            using var factory = CriarFactory();
-            using var client = factory.CreateClient(new WebApplicationFactoryClientOptions
-            {
-                BaseAddress = new Uri("https://localhost")
-            });
+            using var factory = new OficinaApiFactory(database);
+            using var client = factory.CriarClienteAutenticado("Admin");
 
             // Criar cliente via API.
             var response = await client.PostAsJsonAsync("/api/clientes", new
@@ -88,11 +85,8 @@ public class ClientesHttpIntegrationTests(SqlServerTestDatabase database)
     [Fact]
     public async Task DeveRetornar400ParaRequestInvalidoE404ParaRecursoInexistente()
     {
-        using var factory = CriarFactory();
-        using var client = factory.CreateClient(new WebApplicationFactoryClientOptions
-        {
-            BaseAddress = new Uri("https://localhost")
-        });
+        using var factory = new OficinaApiFactory(database);
+        using var client = factory.CriarClienteAutenticado("Admin");
 
         var invalido = await client.PostAsJsonAsync("/api/clientes", new
         {

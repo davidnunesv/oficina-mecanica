@@ -1,4 +1,5 @@
 ﻿
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Oficina.Api.Contracts;
 using Oficina.Application.Services;
@@ -7,6 +8,7 @@ using Oficina.Application.UseCases.OrdensServico;
 namespace Oficina.Api.Controllers;
 
 [ApiController]
+[Authorize(Policy = "AdminOnly")]
 [Route("api/ordens-servico")]
 public sealed class OrdensServicoController(
     OrdemServicoApplicationService service,
