@@ -7,6 +7,7 @@ using Oficina.Application.Services;
 using Oficina.Application.UseCases.OrdensServico;
 using Oficina.Infrastructure;
 using System.Security.Claims;
+using Oficina.Api.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,9 +34,34 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
 // Autenticação JWT
-builder.Services
-    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer();
+
+var demoAuthEnabled =
+    builder.Environment.IsDevelopment() &&
+    builder.Configuration.GetValue<bool>("DemoAuth:Enabled");
+
+if (demoAuthEnabled)
+{
+    var demoJwt = new DemoJwtService();
+
+    builder.Services.AddSingleton(demoJwt);
+
+    builder.Services
+        .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        .AddJwtBearer(options =>
+        {
+            options.MapInboundClaims = false;
+            options.TokenValidationParameters =
+                demoJwt.ValidationParameters;
+        });
+}
+else
+{
+    // Mantém o comportamento JWT original.
+    builder.Services
+        .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        .AddJwtBearer();
+}
+
 
 // Autorização
 
@@ -116,26 +142,46 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-// Endpoints temporários para testar JWT localmente.
-// Eles não existirão nos ambientes de produção.
-if (app.Environment.IsDevelopment())
-{
-    app.MapGet("/dev/auth/me", (ClaimsPrincipal user) =>
-        Results.Ok(new
-        {
-            nome = user.Identity?.Name,
-            autenticado = user.Identity?.IsAuthenticated,
-            administrador = user.IsInRole("Admin")
-        }))
-        .RequireAuthorization();
 
-    app.MapGet("/dev/auth/admin", () =>
-        Results.Ok(new
+// Endpoints para testar JWT localmente.
+if (demoAuthEnabled)
+{
+    app.MapPost(
+        "/dev/demo-token/admin",
+        (DemoJwtService jwt) =>
         {
-            mensagem = "Acesso administrativo autorizado."
-        }))
-        .RequireAuthorization("AdminOnly");
+            return Results.Ok(new
+            {
+                accessToken = jwt.GerarToken("Admin"),
+                tokenType = "Bearer",
+                expiresIn = 3600
+            });
+        })
+        .AllowAnonymous()
+        .WithTags("Demonstração")
+        .WithSummary("Gerar JWT Admin para testes locais");
+
+    app.MapPost(
+        "/dev/demo-token/cliente/{clienteId:guid}",
+        (Guid clienteId, DemoJwtService jwt) =>
+        {
+            if (clienteId == Guid.Empty)
+                return Results.BadRequest();
+
+            return Results.Ok(new
+            {
+                accessToken = jwt.GerarToken(
+                    "Cliente",
+                    clienteId),
+                tokenType = "Bearer",
+                expiresIn = 3600
+            });
+        })
+        .AllowAnonymous()
+        .WithTags("Demonstração")
+        .WithSummary("Gerar JWT Cliente para testes locais");
 }
+
 
 app.Run();
 
