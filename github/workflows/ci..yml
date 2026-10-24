@@ -1,0 +1,86 @@
+
+name: Oficina Mecanica CI
+
+on:
+  push:
+    branches: [dev, main]
+  pull_request:
+    branches: [dev, main]
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Generate temporary SQL password
+        shell: bash
+        run: |
+          PASSWORD="Aa1!$(openssl rand -hex 18)"
+          echo "::add-mask::$PASSWORD"
+          echo "MSSQL_SA_PASSWORD=$PASSWORD" >> "$GITHUB_ENV"
+          echo "OFICINA_TEST_CONNECTION_STRING=Server=127.0.0.1,14333;Database=OficinaMecanica_IntegrationTests;User Id=sa;Password=$PASSWORD;Encrypt=True;TrustServerCertificate=True;" >> "$GITHUB_ENV"
+
+      - name: Start SQL Server
+        run: docker compose up -d --wait sqlserver
+
+      - name: Restore
+        run: dotnet restore OficinaMecanica.slnx
+
+      - name: Build
+        run: dotnet build OficinaMecanica.slnx -c Release --no-restore
+
+      - name: Run tests with coverage
+        run: |
+          dotnet test OficinaMecanica.slnx \
+            -c Release \
+            --no-build \
+            --settings coverage.runsettings \
+            --collect:"XPlat Code Coverage" \
+            --results-directory ./TestResults
+
+      - name: Build Docker image
+        run: |
+          docker build \
+            -f src/Oficina.Api/Dockerfile \
+            -t oficina-api:ci .
+
+      - name: Install ReportGenerator
+        run: dotnet tool install --global dotnet-reportgenerator-globaltool
+
+      - name: Generate coverage report
+        run: |
+          reportgenerator \
+            "-reports:TestResults/**/coverage.cobertura.xml" \
+            "-targetdir:CoverageReport" \
+            "-reporttypes:Html;Cobertura;TextSummary"
+
+          cat CoverageReport/Summary.txt
+
+      - name: Upload coverage and test artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: oficina-test-results
+          path: |
+            TestResults/
+            CoverageReport/
+          if-no-files-found: warn
+
+      - name: Show database logs on failure
+        if: failure()
+        run: docker compose logs sqlserver
+
+      - name: Stop containers
+        if: always()
+        run: docker compose down
