@@ -6,20 +6,20 @@
 
 O projeto contempla o cadastro de clientes, veículos, serviços e peças/insumos, além do ciclo de vida de ordens de serviço (OS): recebimento, diagnóstico, orçamento, aprovação, execução, finalização e entrega. Inclui autenticação JWT, autorização por perfil, persistência em SQL Server, testes automatizados e ambiente reproduzível com Docker Compose.
 
-> **Ambiente de avaliação:** há endpoints de emissão de JWT exclusivos do modo de demonstração local, para permitir testar a API pelo Swagger sem configurar um provedor de identidade. Eles **não representam autenticação real de usuários** e não devem ser habilitados em produção.
+> **Ambiente de avaliação:** há endpoints de emissão de JWT exclusivos do modo de demonstração local, para permitir testar a API pelo Swagger sem configurar um provedor de identidade. Eles **não representam autenticação real de usuários** e não devem ser utilizados em produção.
 
 ## Tecnologias
 
 - **.NET 10 / ASP.NET Core Web API** — endpoints REST.
 - **C#**, **Clean Architecture** e conceitos de **Domain-Driven Design (DDD)**.
-- **Entity Framework Core 10** e **SQL Server 2022** — persistência e migrations.
-- **JWT Bearer** e políticas de autorização — perfis `Admin` e `Cliente`.
-- **Swagger / OpenAPI (Swashbuckle)** — documentação e testes interativos.
+- **Entity Framework Core 10** e **SQL Server** — persistência e migrations.
+- **JWT** e políticas de autorização — perfis `Admin` e `Cliente`.
+- **Swagger / OpenAPI** — documentação e testes interativos.
 - **Docker / Docker Compose** — API, banco e migrações.
 - **xUnit**, `WebApplicationFactory` e **Coverlet** — testes e cobertura.
 - **GitHub Actions** — integração contínua.
 
-## Executar em poucos minutos (Docker)
+## Como executar o projeto (Docker)
 
 ### Pré-requisitos
 
@@ -44,13 +44,7 @@ Copy-Item .env.example .env
 notepad .env
 ```
 
-No **Linux/macOS**:
-
-```bash
-cp .env.example .env
-```
-
-Defina uma senha forte e exclusiva para desenvolvimento no arquivo `.env`:
+Defina uma senha para desenvolvimento no arquivo `.env`:
 
 ```dotenv
 MSSQL_SA_PASSWORD=SUBSTITUA_POR_UMA_SENHA_FORTE
@@ -72,7 +66,7 @@ docker compose logs migrate
 docker compose logs api
 ```
 
-O esperado é encontrar `sqlserver` saudável, `migrate` concluído com código `0` e `api` em execução. O serviço `migrate` aplica automaticamente as migrations pendentes antes da inicialização da API.
+O esperado é encontrar `sqlserver` saudável, `migrate` concluído com código `0` e `api` em execução. O serviço `migrate` aplica automaticamente as migrations do ORM pendentes antes da inicialização da API.
 
 **5. Abrir o Swagger:**
 
@@ -85,7 +79,7 @@ O esperado é encontrar `sqlserver` saudável, `migrate` concluído com código 
 | SQL Server dentro da rede Docker | `sqlserver,1433` |
 | Banco da aplicação | `OficinaMecanica` |
 
-O Compose expõe as portas apenas no `127.0.0.1`. O endpoint local utiliza **HTTP**, destinado à demonstração em máquina de desenvolvimento; não exponha esse ambiente à internet.
+O Compose expõe as portas apenas no `127.0.0.1`. O endpoint local utiliza **HTTP**, destinado à demonstração em máquina de desenvolvimento.
 
 > **Atenção:** o `compose.yaml` usa `container_name: oficina-sqlserver` e portas fixas. Se já existir outra instância do projeto ativa, encerre-a antes para evitar conflitos. Use `docker compose down` para parar os serviços; **não use `docker compose down -v`**, pois a opção `-v` remove o volume persistente do banco.
 
