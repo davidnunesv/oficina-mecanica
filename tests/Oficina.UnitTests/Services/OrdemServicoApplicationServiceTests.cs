@@ -496,7 +496,7 @@ public class OrdemServicoApplicationServiceTests
         var (service, repositorio, cliente, veiculo) = CriarContexto();
         var os = await CriarOsComOrcamentoPendenteAsync(repositorio, cliente, veiculo);
 
-        var rejeitado = await service.RejeitarOrcamentoAsync(os.Id);
+        var rejeitado = await service.RejeitarOrcamentoAsync(os.Id, os.ClienteId);
 
         Assert.True(rejeitado);
         Assert.Equal(StatusOrcamento.Rejeitado, os.Orcamento!.Status);
@@ -511,9 +511,9 @@ public class OrdemServicoApplicationServiceTests
         var (service, repositorio, cliente, veiculo) = CriarContexto();
         var os = await CriarOsComOrcamentoPendenteAsync(repositorio, cliente, veiculo);
 
-        await service.RejeitarOrcamentoAsync(os.Id);
+        await service.RejeitarOrcamentoAsync(os.Id, os.ClienteId);
 
-        await Assert.ThrowsAsync<InvalidOperationException>(() => service.RejeitarOrcamentoAsync(os.Id));
+        await Assert.ThrowsAsync<InvalidOperationException>(() => service.RejeitarOrcamentoAsync(os.Id, os.ClienteId));
 
         Assert.Equal(StatusOrcamento.Rejeitado, os.Orcamento!.Status);
         Assert.Equal(1, repositorio.UpdateCount);
@@ -526,7 +526,7 @@ public class OrdemServicoApplicationServiceTests
         var os = await CriarOsComOrcamentoPendenteAsync(repositorio, cliente, veiculo);
         os.AprovarOrcamento();
 
-        await Assert.ThrowsAsync<InvalidOperationException>(() => service.RejeitarOrcamentoAsync(os.Id));
+        await Assert.ThrowsAsync<InvalidOperationException>(() => service.RejeitarOrcamentoAsync(os.Id, os.ClienteId));
 
         Assert.Equal(StatusOrcamento.Aprovado, os.Orcamento!.Status);
         Assert.Equal(0, repositorio.UpdateCount);
@@ -538,7 +538,7 @@ public class OrdemServicoApplicationServiceTests
         var (service, repositorio, cliente, veiculo) = CriarContexto();
         var osId = await service.CreateAsync(cliente.Id, veiculo.Id);
 
-        await Assert.ThrowsAsync<InvalidOperationException>(() => service.RejeitarOrcamentoAsync(osId));
+        await Assert.ThrowsAsync<InvalidOperationException>(() => service.RejeitarOrcamentoAsync(osId, cliente.Id));
 
         Assert.Equal(0, repositorio.UpdateCount);
     }
@@ -548,7 +548,7 @@ public class OrdemServicoApplicationServiceTests
     {
         var (service, _, _, _) = CriarContexto();
 
-        var rejeitado = await service.RejeitarOrcamentoAsync(Guid.NewGuid());
+        var rejeitado = await service.RejeitarOrcamentoAsync(Guid.NewGuid(), Guid.NewGuid());
 
         Assert.False(rejeitado);
     }
@@ -558,7 +558,7 @@ public class OrdemServicoApplicationServiceTests
     {
         var (service, _, _, _) = CriarContexto();
 
-        await Assert.ThrowsAsync<ArgumentException>(() => service.RejeitarOrcamentoAsync(Guid.Empty));
+        await Assert.ThrowsAsync<ArgumentException>(() => service.RejeitarOrcamentoAsync(Guid.Empty, Guid.Empty));
     }
 
 

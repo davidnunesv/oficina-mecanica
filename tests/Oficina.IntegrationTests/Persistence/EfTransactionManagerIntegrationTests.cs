@@ -27,7 +27,7 @@ public class EfTransactionManagerIntegrationTests(SqlServerTestDatabase database
                     new PecaInsumoRepository(context),
                     new EfTransactionManager(context));
 
-                Assert.True(await useCase.ExecuteAsync(cenario.OrdemServicoId));
+                Assert.True(await useCase.ExecuteAsync(cenario.OrdemServicoId, cenario.ClienteId));
             }
 
             // Confirmar que todas as mudanças foram persistidas.

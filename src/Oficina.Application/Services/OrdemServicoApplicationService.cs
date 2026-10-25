@@ -168,14 +168,14 @@ public class OrdemServicoApplicationService(
     }
 
 
-    public async Task<bool> RejeitarOrcamentoAsync(Guid ordemServicoId, CancellationToken cancellationToken = default)
+    public async Task<bool> RejeitarOrcamentoAsync(Guid ordemServicoId, Guid ClienteId, CancellationToken cancellationToken = default)
     {
         if (ordemServicoId == Guid.Empty)
             throw new ArgumentException("O ID da Ordem de Serviço é obrigatório.", nameof(ordemServicoId));
 
         var os = await _ordemServicoRepository.GetByIdAsync(ordemServicoId, cancellationToken);
 
-        if (os is null)
+        if (os is null || os.ClienteId != ClienteId)
             return false;
 
         os.RejeitarOrcamento();
