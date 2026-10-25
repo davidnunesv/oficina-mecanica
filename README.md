@@ -92,7 +92,7 @@ Com o Docker Compose, o modo de demonstração é habilitado pela combinação d
 1. Abra `http://localhost:8080/swagger`.
 2. Expanda **`POST /dev/demo-token/admin`** e clique em **Try it out → Execute**.
 3. Copie o valor de `accessToken` do JSON retornado.
-4. Clique em **Authorize** no Swagger e cole **somente o token**, sem escrever `Bearer`.
+4. Clique em **Authorize** no Swagger e cole **somente o token**.
 5. Execute `GET /api/clientes`. Com o token Admin válido, a resposta esperada é `200 OK`.
 
 ### Cliente
@@ -112,8 +112,6 @@ O token de cliente pode acompanhar **a própria OS**, mas não acessar endpoints
 | Acompanhamento da OS pelo proprietário | `200 OK` |
 | Acompanhamento da OS por outro cliente | `404 Not Found` |
 | JWT inválido ou adulterado | `401 Unauthorized` |
-
-**Segurança:** nesse modo, os endpoints de demonstração emitem JWTs **sem verificar identidade ou senha**. Eles só devem ser utilizados em ambiente local confiável. A chave de assinatura é gerada aleatoriamente na inicialização da API; ao reiniciar o container, gere novos tokens. Os tokens possuem validade de **1 hora**. Para produção, o sistema requer integração com um provedor de identidade confiável e desativação explícita do modo de demonstração.
 
 ## Funcionalidades e endpoints
 
@@ -285,7 +283,7 @@ Na última execução verificada do GitHub Actions na branch `dev` (**24/10/2026
 | Cobertura de linhas — Application | **99,5%** |
 | Cobertura de linhas — Domain | **97,4%** |
 
-A cobertura acima refere-se às assemblies `Oficina.Domain` e `Oficina.Application` filtradas em `coverage.runsettings`; **não representa a cobertura global de API + Infrastructure**. Os percentuais são históricos e podem variar após alterações no projeto. O pipeline coleta e publica os relatórios, mas não aplica automaticamente um limite mínimo de cobertura como condição de aprovação.
+A cobertura acima refere-se às assemblies `Oficina.Domain` e `Oficina.Application` filtradas em `coverage.runsettings`. Os percentuais são históricos e podem variar após alterações no projeto. O pipeline coleta e publica os relatórios, mas não aplica automaticamente um limite mínimo de cobertura como condição de aprovação.
 
 **Pipeline:** [GitHub Actions — Oficina Mecânica](https://github.com/davidnunesv/oficina-mecanica/actions/workflows/ci.yml). Disparado em pushes e Pull Requests para `dev` e `main`, com restore, build, testes, cobertura e build da imagem Docker.
 
@@ -333,7 +331,6 @@ docker compose up -d --build  # Reconstruir e iniciar o ambiente
 - O modo de demonstração usa endpoints públicos de emissão de token, **apenas para experimentação local**. Não substitui login, cadastro de usuários ou verificação de identidade real.
 - Para produção: desabilitar `DemoAuth`, integrar um provedor de identidade confiável, fornecer configuração JWT segura, usar HTTPS, proteger segredos e criar credenciais SQL com privilégios mínimos.
 - A aplicação de migrations via container foi projetada para o ambiente de demonstração; implantações de produção devem usar um processo de atualização de schema controlado.
-- Não versionar `.env`, chaves privadas, User Secrets ou dados reais de clientes.
 
 ---
 
