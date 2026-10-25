@@ -104,18 +104,30 @@ public sealed class OrdensServicoController(
 
     [HttpPost("{id:guid}/orcamento/aprovar")]
     [Authorize(Policy = "ClienteOnly")]
-    public async Task<IActionResult> AprovarOrcamentoAsync(Guid id, Guid ClienteId, CancellationToken ct)
+    public async Task<IActionResult> AprovarOrcamentoAsync( Guid id, CancellationToken ct)
     {
-        var succeeded = await aprovarOrcamento.ExecuteAsync(id, ClienteId, ct);
+        var claim = User.FindFirst("cliente_id")?.Value;
+
+        if (!Guid.TryParse(claim, out var clienteId)
+            || clienteId == Guid.Empty)
+            return Forbid();
+
+        var succeeded = await aprovarOrcamento.ExecuteAsync(id, clienteId, ct);
 
         return succeeded ? NoContent() : NotFound();
     }
 
     [HttpPost("{id:guid}/orcamento/rejeitar")]
     [Authorize(Policy = "ClienteOnly")]
-    public async Task<IActionResult> RejeitarOrcamentoAsync(Guid id, Guid ClienteId, CancellationToken ct)
+    public async Task<IActionResult> RejeitarOrcamentoAsync(Guid id, CancellationToken ct)
     {
-        var succeeded = await service.RejeitarOrcamentoAsync(id, ClienteId, ct);
+        var claim = User.FindFirst("cliente_id")?.Value;
+
+        if (!Guid.TryParse(claim, out var clienteId)
+            || clienteId == Guid.Empty)
+            return Forbid();
+
+        var succeeded = await service.RejeitarOrcamentoAsync(id, clienteId, ct);
 
         return succeeded ? NoContent() : NotFound();
     }
