@@ -6,20 +6,20 @@
 
 O projeto contempla o cadastro de clientes, veículos, serviços e peças/insumos, além do ciclo de vida de ordens de serviço (OS): recebimento, diagnóstico, orçamento, aprovação, execução, finalização e entrega. Inclui autenticação JWT, autorização por perfil, persistência em SQL Server, testes automatizados e ambiente reproduzível com Docker Compose.
 
-> **Ambiente de avaliação:** há endpoints de emissão de JWT exclusivos do modo de demonstração local, para permitir testar a API pelo Swagger sem configurar um provedor de identidade. Eles **não representam autenticação real de usuários** e não devem ser habilitados em produção.
+> **Ambiente de avaliação:** há endpoints de emissão de JWT exclusivos do modo de demonstração local, para permitir testar a API pelo Swagger sem configurar um provedor de identidade. Eles **não representam autenticação real de usuários** e não devem ser utilizados em produção.
 
 ## Tecnologias
 
 - **.NET 10 / ASP.NET Core Web API** — endpoints REST.
 - **C#**, **Clean Architecture** e conceitos de **Domain-Driven Design (DDD)**.
-- **Entity Framework Core 10** e **SQL Server 2022** — persistência e migrations.
-- **JWT Bearer** e políticas de autorização — perfis `Admin` e `Cliente`.
-- **Swagger / OpenAPI (Swashbuckle)** — documentação e testes interativos.
+- **Entity Framework Core 10** e **SQL Server** — persistência e migrations.
+- **JWT** e políticas de autorização — perfis `Admin` e `Cliente`.
+- **Swagger / OpenAPI** — documentação e testes interativos.
 - **Docker / Docker Compose** — API, banco e migrações.
 - **xUnit**, `WebApplicationFactory` e **Coverlet** — testes e cobertura.
 - **GitHub Actions** — integração contínua.
 
-## Executar em poucos minutos (Docker)
+## Como executar o projeto (Docker)
 
 ### Pré-requisitos
 
@@ -44,13 +44,7 @@ Copy-Item .env.example .env
 notepad .env
 ```
 
-No **Linux/macOS**:
-
-```bash
-cp .env.example .env
-```
-
-Defina uma senha forte e exclusiva para desenvolvimento no arquivo `.env`:
+Defina uma senha para desenvolvimento no arquivo `.env`:
 
 ```dotenv
 MSSQL_SA_PASSWORD=SUBSTITUA_POR_UMA_SENHA_FORTE
@@ -72,7 +66,7 @@ docker compose logs migrate
 docker compose logs api
 ```
 
-O esperado é encontrar `sqlserver` saudável, `migrate` concluído com código `0` e `api` em execução. O serviço `migrate` aplica automaticamente as migrations pendentes antes da inicialização da API.
+O esperado é encontrar `sqlserver` saudável, `migrate` concluído com código `0` e `api` em execução. O serviço `migrate` aplica automaticamente as migrations do ORM pendentes antes da inicialização da API.
 
 **5. Abrir o Swagger:**
 
@@ -85,7 +79,7 @@ O esperado é encontrar `sqlserver` saudável, `migrate` concluído com código 
 | SQL Server dentro da rede Docker | `sqlserver,1433` |
 | Banco da aplicação | `OficinaMecanica` |
 
-O Compose expõe as portas apenas no `127.0.0.1`. O endpoint local utiliza **HTTP**, destinado à demonstração em máquina de desenvolvimento; não exponha esse ambiente à internet.
+O Compose expõe as portas apenas no `127.0.0.1`. O endpoint local utiliza **HTTP**, destinado à demonstração em máquina de desenvolvimento.
 
 > **Atenção:** o `compose.yaml` usa `container_name: oficina-sqlserver` e portas fixas. Se já existir outra instância do projeto ativa, encerre-a antes para evitar conflitos. Use `docker compose down` para parar os serviços; **não use `docker compose down -v`**, pois a opção `-v` remove o volume persistente do banco.
 
@@ -98,7 +92,7 @@ Com o Docker Compose, o modo de demonstração é habilitado pela combinação d
 1. Abra `http://localhost:8080/swagger`.
 2. Expanda **`POST /dev/demo-token/admin`** e clique em **Try it out → Execute**.
 3. Copie o valor de `accessToken` do JSON retornado.
-4. Clique em **Authorize** no Swagger e cole **somente o token**, sem escrever `Bearer`.
+4. Clique em **Authorize** no Swagger e cole **somente o token**.
 5. Execute `GET /api/clientes`. Com o token Admin válido, a resposta esperada é `200 OK`.
 
 ### Cliente
@@ -118,8 +112,6 @@ O token de cliente pode acompanhar **a própria OS**, mas não acessar endpoints
 | Acompanhamento da OS pelo proprietário | `200 OK` |
 | Acompanhamento da OS por outro cliente | `404 Not Found` |
 | JWT inválido ou adulterado | `401 Unauthorized` |
-
-**Segurança:** nesse modo, os endpoints de demonstração emitem JWTs **sem verificar identidade ou senha**. Eles só devem ser utilizados em ambiente local confiável. A chave de assinatura é gerada aleatoriamente na inicialização da API; ao reiniciar o container, gere novos tokens. Os tokens possuem validade de **1 hora**. Para produção, o sistema requer integração com um provedor de identidade confiável e desativação explícita do modo de demonstração.
 
 ## Funcionalidades e endpoints
 
@@ -291,7 +283,7 @@ Na última execução verificada do GitHub Actions na branch `dev` (**24/10/2026
 | Cobertura de linhas — Application | **99,5%** |
 | Cobertura de linhas — Domain | **97,4%** |
 
-A cobertura acima refere-se às assemblies `Oficina.Domain` e `Oficina.Application` filtradas em `coverage.runsettings`; **não representa a cobertura global de API + Infrastructure**. Os percentuais são históricos e podem variar após alterações no projeto. O pipeline coleta e publica os relatórios, mas não aplica automaticamente um limite mínimo de cobertura como condição de aprovação.
+A cobertura acima refere-se às assemblies `Oficina.Domain` e `Oficina.Application` filtradas em `coverage.runsettings`. Os percentuais são históricos e podem variar após alterações no projeto. O pipeline coleta e publica os relatórios, mas não aplica automaticamente um limite mínimo de cobertura como condição de aprovação.
 
 **Pipeline:** [GitHub Actions — Oficina Mecânica](https://github.com/davidnunesv/oficina-mecanica/actions/workflows/ci.yml). Disparado em pushes e Pull Requests para `dev` e `main`, com restore, build, testes, cobertura e build da imagem Docker.
 
@@ -339,7 +331,6 @@ docker compose up -d --build  # Reconstruir e iniciar o ambiente
 - O modo de demonstração usa endpoints públicos de emissão de token, **apenas para experimentação local**. Não substitui login, cadastro de usuários ou verificação de identidade real.
 - Para produção: desabilitar `DemoAuth`, integrar um provedor de identidade confiável, fornecer configuração JWT segura, usar HTTPS, proteger segredos e criar credenciais SQL com privilégios mínimos.
 - A aplicação de migrations via container foi projetada para o ambiente de demonstração; implantações de produção devem usar um processo de atualização de schema controlado.
-- Não versionar `.env`, chaves privadas, User Secrets ou dados reais de clientes.
 
 ---
 
