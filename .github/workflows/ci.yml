@@ -40,7 +40,7 @@ jobs:
       - name: Build
         run: dotnet build OficinaMecanica.slnx -c Release --no-restore
 
-              - name: Analyze NuGet vulnerabilities
+      - name: Analyze NuGet vulnerabilities
         shell: bash
         run: |
           mkdir -p SecurityReport
