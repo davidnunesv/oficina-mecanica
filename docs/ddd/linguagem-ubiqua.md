@@ -166,6 +166,5 @@ Os objetos de valor implementados são `Documento` e `Placa`. `StatusOS`, `Statu
 
 - [`event-storming.pdf`](event-storming.pdf): comandos, fatos e políticas do processo de negócio.
 - [`diagramas.pdf`](diagramas.pdf): C4 níveis 1, 2 e 3, além do modelo de agregados.
-- [`c4-nivel-1.mmd`](c4-nivel-1.mmd), [`c4-nivel-2.mmd`](c4-nivel-2.mmd) e [`c4-nivel-3.mmd`](c4-nivel-3.mmd)
 - [Board no Miro](https://miro.com/app/board/uXjVEbdPNvM=/).
 - [GitHub — branch `dev`](https://github.com/davidnunesv/oficina-mecanica/tree/dev).
