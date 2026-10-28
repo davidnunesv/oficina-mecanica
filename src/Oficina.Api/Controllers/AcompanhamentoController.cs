@@ -13,22 +13,17 @@ public sealed class AcompanhamentoController(
     OrdemServicoApplicationService service) : ControllerBase
 {
     [HttpGet("{id:guid}")]
-    public async Task<IActionResult> ConsultarAsync(
-        Guid id,
-        CancellationToken cancellationToken)
+    public async Task<IActionResult> ConsultarAsync(Guid id, CancellationToken cancellationToken)
     {
         // A identidade do cliente é obtida do JWT validado.
         var clienteIdClaim = User.FindFirst("cliente_id")?.Value;
 
-        if (!Guid.TryParse(clienteIdClaim, out var clienteId) ||
-            clienteId == Guid.Empty)
+        if (!Guid.TryParse(clienteIdClaim, out var clienteId) ||  clienteId == Guid.Empty)
         {
             return Forbid();
         }
 
-        var ordemServico = await service.GetByIdAsync(
-            id,
-            cancellationToken);
+        var ordemServico = await service.GetDetailsByIdAsync(id, cancellationToken);
 
         if (ordemServico is null ||
             ordemServico.ClienteId != clienteId)
@@ -36,10 +31,6 @@ public sealed class AcompanhamentoController(
             return NotFound();
         }
 
-        var response = new AcompanhamentoOrdemServicoResponse(
-            ordemServico.Id,
-            ordemServico.Status);
-
-        return Ok(response);
+        return Ok(ordemServico);
     }
 }

@@ -1,7 +1,7 @@
 ﻿
 using System.Net;
 using System.Net.Http.Json;
-using Oficina.Api.Contracts;
+using Oficina.Application.DTOs.OrdensServico;
 using Oficina.Domain.Entities;
 using Oficina.IntegrationTests.Persistence;
 using Xunit;
@@ -91,12 +91,15 @@ public sealed class AutorizacaoHttpIntegrationTests(
                     HttpStatusCode.OK,
                     resposta.StatusCode);
 
-                var resultado = await resposta.Content
-                    .ReadFromJsonAsync<AcompanhamentoOrdemServicoResponse>();
+                var resultado = await resposta.Content.ReadFromJsonAsync<OrdemServicoDetalheDto>();
 
                 Assert.NotNull(resultado);
-                Assert.Equal(os.Id, resultado.OrdemServicoId);
+                Assert.Equal(os.Id, resultado.Id);
+                Assert.Equal(proprietario.Id, resultado.ClienteId);
                 Assert.Equal("Recebida", resultado.Status);
+
+                // Nesse teste, a OS acabou de ser criada.
+                Assert.Null(resultado.Orcamento);
             }
 
             // Outro cliente não pode consultar a OS.

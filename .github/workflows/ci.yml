@@ -40,6 +40,30 @@ jobs:
       - name: Build
         run: dotnet build OficinaMecanica.slnx -c Release --no-restore
 
+              - name: Analyze NuGet vulnerabilities
+        shell: bash
+        run: |
+          mkdir -p SecurityReport
+          git rev-parse HEAD > SecurityReport/commit.txt
+          date -u +%Y-%m-%dT%H:%M:%SZ > SecurityReport/data-utc.txt
+
+          dotnet package list \
+            --project OficinaMecanica.slnx \
+            --no-restore \
+            --vulnerable \
+            --include-transitive \
+            --format json \
+            > SecurityReport/nuget-vulnerabilities.json
+
+          cat SecurityReport/nuget-vulnerabilities.json
+
+      - name: Upload vulnerability report
+        uses: actions/upload-artifact@v4
+        with:
+          name: oficina-vulnerabilidades
+          path: SecurityReport/
+          if-no-files-found: error
+
       - name: Run tests with coverage
         run: |
           dotnet test OficinaMecanica.slnx \
