@@ -19,6 +19,8 @@ O projeto contempla o cadastro de clientes, veículos, serviços e peças/insumo
 - **xUnit**, `WebApplicationFactory` e **Coverlet** — testes e cobertura.
 - **GitHub Actions** — integração contínua.
 
+**Obs:** A escolha do SQL como banco de dados se da pela minha familiaridade com a tecnologia e pelo fato das especificações não solicitar o armazenamento de algum dado que não se enquadre em um banco relacional, porém é possível que com a evolução do projeto haja a necessidade de migrar para um banco de dados não relacional.
+
 ## Como executar o projeto (Docker)
 
 ### Pré-requisitos
@@ -332,6 +334,7 @@ docker compose up -d --build  # Reconstruir e iniciar o ambiente
 - Para produção: desabilitar `DemoAuth`, integrar um provedor de identidade confiável, fornecer configuração JWT segura, usar HTTPS, proteger segredos e criar credenciais SQL com privilégios mínimos.
 - A aplicação de migrations via container foi projetada para o ambiente de demonstração; implantações de produção devem usar um processo de atualização de schema controlado.
 
----
 
+---
+**Documentação:** https://miro.com/app/board/uXjVEbdPNvM=/?share_link_id=994815917331 **Documentação no projeto**: docs/ddd
 **Repositório:** https://github.com/davidnunesv/oficina-mecanica · **Branch de desenvolvimento:** `dev`
