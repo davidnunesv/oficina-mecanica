@@ -214,13 +214,20 @@ Com um token **Admin** autorizado no Swagger, execute os passos abaixo em ordem.
 
 **11. Consultar detalhes** — `GET /api/ordens-servico/{osId}/detalhes`. O total esperado para este exemplo é **R$ 195,90** (R$ 150,00 pelo serviço + R$ 45,90 pela peça).
 
-**12. Aprovar orçamento** — `POST /api/ordens-servico/{osId}/orcamento/aprovar`. A OS entra em execução e a peça é reservada para essa OS.
+**Antes do passo 12 troque para o JWT do Cliente**
 
-**13. Finalizar a OS** — `POST /api/ordens-servico/{osId}/finalizar`. A peça reservada é consumida.
+**12. Visualizar OS** - `GET /api/acompanhamento/{osId}`. Rota para o cliente acompanhar a OS, consequentemente analisar o orçamento disponibilizado. 
 
-**14. Entregar o veículo** — `POST /api/ordens-servico/{osId}/entregar`.
+**13. Aprovar orçamento** — `POST /api/ordens-servico/{osId}/orcamento/aprovar`. A OS entra em execução e a peça é reservada para essa OS.
 
-**15. Consultar novamente** — `GET /api/ordens-servico/{osId}/detalhes`. O status esperado é **`Entregue`**.
+**Após orçamento aprovado a OS já iniciará execução e seu usecase**
+**Para os próximos passos troque para JWT de Admin**
+
+**14. Finalizar a OS** — `POST /api/ordens-servico/{osId}/finalizar`. A peça reservada é consumida.
+
+**15. Entregar o veículo** — `POST /api/ordens-servico/{osId}/entregar`.
+
+**16. Consultar novamente** — `GET /api/ordens-servico/{osId}/detalhes`. O status esperado é **`Entregue`**.
 
 As alterações de estado bem-sucedidas retornam, em geral, `204 No Content`; os cadastros retornam `201 Created`.
 
