@@ -211,7 +211,7 @@ public class OrdemServicoApplicationService(
 
         var os = await _ordemServicoRepository.GetByIdAsync(ordemServicoId, cancellationToken);
 
-        return os is null ? null : MapToDetailsDto(os);
+        return os is null ? null : await MapToDetailsDtoAsync(os, cancellationToken);
     }
 
 
@@ -248,19 +248,26 @@ public class OrdemServicoApplicationService(
         );
     }
 
-    private static OrdemServicoDetalheDto MapToDetailsDto(OrdemServico os)
+    private async Task<OrdemServicoDetalheDto> MapToDetailsDtoAsync(OrdemServico os, CancellationToken cancellationToken)
     {
         var diagnostico = os.Diagnostico is null
             ? null
             : new DiagnosticoDetalheDto(os.Diagnostico.Descricao, os.Diagnostico.DataRegistro);
 
-        var servicos = os.ItensServico
-            .Select(item => new ItemServicoDetalheDto(item.ServicoId, item.Quantidade, item.PrecoAplicado, item.CalcularSubtotal()))
-            .ToList();
+        // Os nomes vêm do catálogo atual; valores permanecem os registrados na OS.
+        var servicos = new List<ItemServicoDetalheDto>();
+        foreach (var item in os.ItensServico)
+        {
+            var servico = await _servicoRepository.GetByIdAsync(item.ServicoId, cancellationToken);
+            servicos.Add(new ItemServicoDetalheDto(item.ServicoId, servico?.Nome, item.Quantidade, item.PrecoAplicado, item.CalcularSubtotal()));
+        }
 
-        var pecas = os.ItensPeca
-            .Select(item => new ItemPecaDetalheDto(item.PecaInsumoId, item.PrecoAplicado))
-            .ToList();
+        var pecas = new List<ItemPecaDetalheDto>();
+        foreach (var item in os.ItensPeca)
+        {
+            var peca = await _pecaInsumoRepository.GetByIdAsync(item.PecaInsumoId, cancellationToken);
+            pecas.Add(new ItemPecaDetalheDto(item.PecaInsumoId, peca?.Nome, item.PrecoAplicado));
+        }
 
         var orcamento = os.Orcamento is null
             ? null

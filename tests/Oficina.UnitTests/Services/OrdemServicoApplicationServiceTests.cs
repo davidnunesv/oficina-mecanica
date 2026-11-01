@@ -685,6 +685,39 @@ public class OrdemServicoApplicationServiceTests
 
 
     [Fact]
+    public async Task DeveRetornarNomesAtuaisPreservandoValoresRegistradosNaOs()
+    {
+        var servico = new Servico("Troca de óleo", "Manutenção", 150m);
+        var peca = new PecaInsumo("Filtro de óleo", 45.90m);
+        var servicos = new FakeServicoRepository();
+        var pecas = new FakePecaInsumoRepository();
+        servicos.Servicos.Add(servico);
+        pecas.Pecas.Add(peca);
+        var (app, repositorio, cliente, veiculo) = CriarContexto(servicos: servicos, pecas: pecas);
+
+        var os = new OrdemServico(cliente.Id, veiculo.Id);
+        os.CreateDiagnostic();
+        os.AdicionarServico(servico.Id, 2, 120m);
+        os.AdicionarPeca(peca.Id, 35m);
+        os.GerarOrcamento();
+        await repositorio.CreateAsync(os);
+
+        var detalhes = await app.GetDetailsByIdAsync(os.Id);
+
+        Assert.NotNull(detalhes);
+        var itemServico = Assert.Single(detalhes.Servicos);
+        Assert.Equal("Troca de óleo", itemServico.Nome);
+        Assert.Equal(servico.Id, itemServico.ServicoId);
+        Assert.Equal(120m, itemServico.PrecoAplicado);
+        Assert.Equal(240m, itemServico.Subtotal);
+        var itemPeca = Assert.Single(detalhes.Pecas);
+        Assert.Equal("Filtro de óleo", itemPeca.Nome);
+        Assert.Equal(peca.Id, itemPeca.PecaInsumoId);
+        Assert.Equal(35m, itemPeca.PrecoAplicado);
+        Assert.Equal(275m, detalhes.Orcamento!.ValorTotal);
+    }
+
+    [Fact]
     public async Task DeveConsultarDetalhesDeOsSemDiagnosticoEOrcamento()
     {
         var (service, repositorio, cliente, veiculo) = CriarContexto();
