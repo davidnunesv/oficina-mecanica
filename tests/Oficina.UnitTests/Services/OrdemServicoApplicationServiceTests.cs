@@ -496,7 +496,7 @@ public class OrdemServicoApplicationServiceTests
         var (service, repositorio, cliente, veiculo) = CriarContexto();
         var os = await CriarOsComOrcamentoPendenteAsync(repositorio, cliente, veiculo);
 
-        var rejeitado = await service.RejeitarOrcamentoAsync(os.Id);
+        var rejeitado = await service.RejeitarOrcamentoAsync(os.Id, os.ClienteId);
 
         Assert.True(rejeitado);
         Assert.Equal(StatusOrcamento.Rejeitado, os.Orcamento!.Status);
@@ -511,9 +511,9 @@ public class OrdemServicoApplicationServiceTests
         var (service, repositorio, cliente, veiculo) = CriarContexto();
         var os = await CriarOsComOrcamentoPendenteAsync(repositorio, cliente, veiculo);
 
-        await service.RejeitarOrcamentoAsync(os.Id);
+        await service.RejeitarOrcamentoAsync(os.Id, os.ClienteId);
 
-        await Assert.ThrowsAsync<InvalidOperationException>(() => service.RejeitarOrcamentoAsync(os.Id));
+        await Assert.ThrowsAsync<InvalidOperationException>(() => service.RejeitarOrcamentoAsync(os.Id, os.ClienteId));
 
         Assert.Equal(StatusOrcamento.Rejeitado, os.Orcamento!.Status);
         Assert.Equal(1, repositorio.UpdateCount);
@@ -526,7 +526,7 @@ public class OrdemServicoApplicationServiceTests
         var os = await CriarOsComOrcamentoPendenteAsync(repositorio, cliente, veiculo);
         os.AprovarOrcamento();
 
-        await Assert.ThrowsAsync<InvalidOperationException>(() => service.RejeitarOrcamentoAsync(os.Id));
+        await Assert.ThrowsAsync<InvalidOperationException>(() => service.RejeitarOrcamentoAsync(os.Id, os.ClienteId));
 
         Assert.Equal(StatusOrcamento.Aprovado, os.Orcamento!.Status);
         Assert.Equal(0, repositorio.UpdateCount);
@@ -538,7 +538,7 @@ public class OrdemServicoApplicationServiceTests
         var (service, repositorio, cliente, veiculo) = CriarContexto();
         var osId = await service.CreateAsync(cliente.Id, veiculo.Id);
 
-        await Assert.ThrowsAsync<InvalidOperationException>(() => service.RejeitarOrcamentoAsync(osId));
+        await Assert.ThrowsAsync<InvalidOperationException>(() => service.RejeitarOrcamentoAsync(osId, cliente.Id));
 
         Assert.Equal(0, repositorio.UpdateCount);
     }
@@ -548,7 +548,7 @@ public class OrdemServicoApplicationServiceTests
     {
         var (service, _, _, _) = CriarContexto();
 
-        var rejeitado = await service.RejeitarOrcamentoAsync(Guid.NewGuid());
+        var rejeitado = await service.RejeitarOrcamentoAsync(Guid.NewGuid(), Guid.NewGuid());
 
         Assert.False(rejeitado);
     }
@@ -558,7 +558,7 @@ public class OrdemServicoApplicationServiceTests
     {
         var (service, _, _, _) = CriarContexto();
 
-        await Assert.ThrowsAsync<ArgumentException>(() => service.RejeitarOrcamentoAsync(Guid.Empty));
+        await Assert.ThrowsAsync<ArgumentException>(() => service.RejeitarOrcamentoAsync(Guid.Empty, Guid.Empty));
     }
 
 
@@ -683,6 +683,39 @@ public class OrdemServicoApplicationServiceTests
         Assert.Equal(0, repositorio.UpdateCount);
     }
 
+
+    [Fact]
+    public async Task DeveRetornarNomesAtuaisPreservandoValoresRegistradosNaOs()
+    {
+        var servico = new Servico("Troca de óleo", "Manutenção", 150m);
+        var peca = new PecaInsumo("Filtro de óleo", 45.90m);
+        var servicos = new FakeServicoRepository();
+        var pecas = new FakePecaInsumoRepository();
+        servicos.Servicos.Add(servico);
+        pecas.Pecas.Add(peca);
+        var (app, repositorio, cliente, veiculo) = CriarContexto(servicos: servicos, pecas: pecas);
+
+        var os = new OrdemServico(cliente.Id, veiculo.Id);
+        os.CreateDiagnostic();
+        os.AdicionarServico(servico.Id, 2, 120m);
+        os.AdicionarPeca(peca.Id, 35m);
+        os.GerarOrcamento();
+        await repositorio.CreateAsync(os);
+
+        var detalhes = await app.GetDetailsByIdAsync(os.Id);
+
+        Assert.NotNull(detalhes);
+        var itemServico = Assert.Single(detalhes.Servicos);
+        Assert.Equal("Troca de óleo", itemServico.Nome);
+        Assert.Equal(servico.Id, itemServico.ServicoId);
+        Assert.Equal(120m, itemServico.PrecoAplicado);
+        Assert.Equal(240m, itemServico.Subtotal);
+        var itemPeca = Assert.Single(detalhes.Pecas);
+        Assert.Equal("Filtro de óleo", itemPeca.Nome);
+        Assert.Equal(peca.Id, itemPeca.PecaInsumoId);
+        Assert.Equal(35m, itemPeca.PrecoAplicado);
+        Assert.Equal(275m, detalhes.Orcamento!.ValorTotal);
+    }
 
     [Fact]
     public async Task DeveConsultarDetalhesDeOsSemDiagnosticoEOrcamento()

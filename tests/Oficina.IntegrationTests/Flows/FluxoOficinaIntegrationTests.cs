@@ -67,7 +67,7 @@ public class FluxoOficinaIntegrationTests(SqlServerTestDatabase database)
             await using (var context = database.CreateContext())
             {
                 var app = CriarAplicacao(context);
-                Assert.True(await app.Aprovar.ExecuteAsync(cenario.OsId));
+                Assert.True(await app.Aprovar.ExecuteAsync(cenario.OsId, cenario.ClienteId));
             }
 
             // Etapa 4: consultar o resultado da aprovação.
@@ -163,7 +163,7 @@ public class FluxoOficinaIntegrationTests(SqlServerTestDatabase database)
             await using (var context = database.CreateContext())
             {
                 var app = CriarAplicacao(context);
-                Assert.True(await app.Ordens.RejeitarOrcamentoAsync(cenario.OsId));
+                Assert.True(await app.Ordens.RejeitarOrcamentoAsync(cenario.OsId, cenario.ClienteId));
             }
 
             await using (var context = database.CreateContext())
@@ -171,7 +171,7 @@ public class FluxoOficinaIntegrationTests(SqlServerTestDatabase database)
                 var app = CriarAplicacao(context);
 
                 await Assert.ThrowsAsync<InvalidOperationException>(
-                    () => app.Aprovar.ExecuteAsync(cenario.OsId));
+                    () => app.Aprovar.ExecuteAsync(cenario.OsId, cenario.ClienteId));
 
                 await Assert.ThrowsAsync<InvalidOperationException>(
                     () => app.Finalizar.ExecuteAsync(cenario.OsId));

@@ -14,7 +14,7 @@ public class AprovarOrcamentoUseCaseTests
         var os = CriarOsComOrcamento();
         var (useCase, repositorioOs, repositorioPecas, transacao) = CriarContexto(os);
 
-        var aprovado = await useCase.ExecuteAsync(os.Id);
+        var aprovado = await useCase.ExecuteAsync(os.Id, os.ClienteId);
 
         Assert.True(aprovado);
         Assert.Equal(StatusOrcamento.Aprovado, os.Orcamento!.Status);
@@ -33,7 +33,7 @@ public class AprovarOrcamentoUseCaseTests
         var os = CriarOsComOrcamento(peca1, peca2);
         var (useCase, repositorioOs, repositorioPecas, transacao) = CriarContexto(os, peca1, peca2);
 
-        var aprovado = await useCase.ExecuteAsync(os.Id);
+        var aprovado = await useCase.ExecuteAsync(os.Id, os.ClienteId);
 
         Assert.True(aprovado);
         Assert.Equal(StatusOrcamento.Aprovado, os.Orcamento!.Status);
@@ -54,7 +54,7 @@ public class AprovarOrcamentoUseCaseTests
         os.RejeitarOrcamento();
         var (useCase, repositorioOs, _, _) = CriarContexto(os);
 
-        await Assert.ThrowsAsync<InvalidOperationException>(() => useCase.ExecuteAsync(os.Id));
+        await Assert.ThrowsAsync<InvalidOperationException>(() => useCase.ExecuteAsync(os.Id, os.ClienteId));
 
         Assert.Equal(StatusOrcamento.Rejeitado, os.Orcamento!.Status);
         Assert.Equal(StatusOS.AguardandoAprovacao, os.Status);
@@ -72,7 +72,7 @@ public class AprovarOrcamentoUseCaseTests
 
         var (useCase, repositorioOs, repositorioPecas, _) = CriarContexto(os, peca1, peca2);
 
-        await Assert.ThrowsAsync<InvalidOperationException>(() => useCase.ExecuteAsync(os.Id));
+        await Assert.ThrowsAsync<InvalidOperationException>(() => useCase.ExecuteAsync(os.Id, os.ClienteId));
 
         Assert.Equal(StatusPecaInsumo.Disponivel, peca1.Status);
         Assert.Null(peca1.OrdemServicoId);
@@ -92,7 +92,7 @@ public class AprovarOrcamentoUseCaseTests
         // A peça está na OS, mas não existe no repositório.
         var (useCase, repositorioOs, repositorioPecas, _) = CriarContexto(os);
 
-        await Assert.ThrowsAsync<KeyNotFoundException>(() => useCase.ExecuteAsync(os.Id));
+        await Assert.ThrowsAsync<KeyNotFoundException>(() => useCase.ExecuteAsync(os.Id, os.ClienteId));
 
         Assert.Equal(StatusOrcamento.Pendente, os.Orcamento!.Status);
         Assert.Equal(StatusPecaInsumo.Disponivel, peca.Status);
@@ -106,9 +106,9 @@ public class AprovarOrcamentoUseCaseTests
         var os = CriarOsComOrcamento();
         var (useCase, repositorioOs, _, _) = CriarContexto(os);
 
-        await useCase.ExecuteAsync(os.Id);
+        await useCase.ExecuteAsync(os.Id, os.ClienteId);
 
-        await Assert.ThrowsAsync<InvalidOperationException>(() => useCase.ExecuteAsync(os.Id));
+        await Assert.ThrowsAsync<InvalidOperationException>(() => useCase.ExecuteAsync(os.Id, os.ClienteId));
 
         Assert.Equal(StatusOrcamento.Aprovado, os.Orcamento!.Status);
         Assert.Equal(StatusOS.EmExecucao, os.Status);
@@ -120,7 +120,7 @@ public class AprovarOrcamentoUseCaseTests
     {
         var (useCase, _, _, _) = CriarContexto(null);
 
-        var resultado = await useCase.ExecuteAsync(Guid.NewGuid());
+        var resultado = await useCase.ExecuteAsync(Guid.NewGuid(), Guid.NewGuid());
 
         Assert.False(resultado);
     }
@@ -130,7 +130,7 @@ public class AprovarOrcamentoUseCaseTests
     {
         var (useCase, _, _, _) = CriarContexto(null);
 
-        await Assert.ThrowsAsync<ArgumentException>(() => useCase.ExecuteAsync(Guid.Empty));
+        await Assert.ThrowsAsync<ArgumentException>(() => useCase.ExecuteAsync(Guid.Empty, Guid.Empty));
     }
 
 

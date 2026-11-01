@@ -14,7 +14,7 @@ public class AprovarOrcamentoUseCase(
     private readonly IPecaInsumoRepository _pecaInsumoRepository = pecaInsumoRepository ?? throw new ArgumentNullException(nameof(pecaInsumoRepository));
     private readonly ITransactionManager _transactionManager = transactionManager ?? throw new ArgumentNullException(nameof(transactionManager));
 
-    public Task<bool> ExecuteAsync(Guid ordemServicoId, CancellationToken cancellationToken = default)
+    public Task<bool> ExecuteAsync(Guid ordemServicoId, Guid ClienteId, CancellationToken cancellationToken = default)
     {
         if (ordemServicoId == Guid.Empty)
             throw new ArgumentException("O ID da Ordem de Serviço é obrigatório.", nameof(ordemServicoId));
@@ -23,7 +23,7 @@ public class AprovarOrcamentoUseCase(
         {
             var os = await _ordemServicoRepository.GetByIdAsync(ordemServicoId, ct);
 
-            if (os is null)
+            if (os is null || os.ClienteId != ClienteId)
                 return false;
 
             if (os.Status != StatusOS.AguardandoAprovacao || os.Orcamento?.Status != StatusOrcamento.Pendente)
