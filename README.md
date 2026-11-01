@@ -343,5 +343,5 @@ docker compose up -d --build  # Reconstruir e iniciar o ambiente
 
 
 ---
-**Documentação:** https://miro.com/app/board/uXjVEbdPNvM=/?share_link_id=994815917331 **Documentação no projeto**: docs/ddd
+**Documentação:** https://miro.com/app/board/uXjVEbdPNvM=/?share_link_id=998797586548 **Documentação no projeto**: docs/ddd
 **Repositório:** https://github.com/davidnunesv/oficina-mecanica · **Branch de desenvolvimento:** `dev`
