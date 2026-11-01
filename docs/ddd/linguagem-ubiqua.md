@@ -117,7 +117,7 @@ Os nomes de **eventos de domínio** abaixo representam *fatos de negócio identi
 | Consultar Acompanhamento | Consulta sem evento de mutação | Cliente autenticado é proprietário da OS. |
 | Cadastrar Peça/Insumo | Unidade Cadastrada | Cadastro individual de peça. |
 
-**Disponibilizar orçamento ao cliente:** este é um objetivo/etapa de negócio representado no Event Storming, mas a implementação consultada **não possui um endpoint GET específico para o cliente obter itens e totais do orçamento**. Existe `GET /api/ordens-servico/{id}/detalhes` protegido por `AdminOnly`; o cliente possui `GET /api/acompanhamento/{id}` para consultar o status da própria OS, no mesmo endpoint possui informações da OS como orçamento, etc…
+**Disponibilizar orçamento ao cliente:** O cliente consulta os detalhes da própria OS, incluindo serviços, peças e valores do orçamento, em `GET /api/acompanhamento/{id}`, mediante autenticação e validação de propriedade.
 
 ## 8. Agregados e objetos de valor
 

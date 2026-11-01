@@ -19,6 +19,8 @@ O projeto contempla o cadastro de clientes, veículos, serviços e peças/insumo
 - **xUnit**, `WebApplicationFactory` e **Coverlet** — testes e cobertura.
 - **GitHub Actions** — integração contínua.
 
+**Obs:** A escolha do SQL como banco de dados se da pela minha familiaridade com a tecnologia e pelo fato das especificações não solicitar o armazenamento de algum dado que não se enquadre em um banco relacional, porém é possível que com a evolução do projeto haja a necessidade de migrar para um banco de dados não relacional.
+
 ## Como executar o projeto (Docker)
 
 ### Pré-requisitos
@@ -212,13 +214,20 @@ Com um token **Admin** autorizado no Swagger, execute os passos abaixo em ordem.
 
 **11. Consultar detalhes** — `GET /api/ordens-servico/{osId}/detalhes`. O total esperado para este exemplo é **R$ 195,90** (R$ 150,00 pelo serviço + R$ 45,90 pela peça).
 
-**12. Aprovar orçamento** — `POST /api/ordens-servico/{osId}/orcamento/aprovar`. A OS entra em execução e a peça é reservada para essa OS.
+**Antes do passo 12 troque para o JWT do Cliente**
 
-**13. Finalizar a OS** — `POST /api/ordens-servico/{osId}/finalizar`. A peça reservada é consumida.
+**12. Visualizar OS** - `GET /api/acompanhamento/{osId}`. Rota para o cliente acompanhar a OS, consequentemente analisar o orçamento disponibilizado. 
 
-**14. Entregar o veículo** — `POST /api/ordens-servico/{osId}/entregar`.
+**13. Aprovar orçamento** — `POST /api/ordens-servico/{osId}/orcamento/aprovar`. A OS entra em execução e a peça é reservada para essa OS.
 
-**15. Consultar novamente** — `GET /api/ordens-servico/{osId}/detalhes`. O status esperado é **`Entregue`**.
+**Após orçamento aprovado a OS já iniciará execução e seu usecase**
+**Para os próximos passos troque para JWT de Admin**
+
+**14. Finalizar a OS** — `POST /api/ordens-servico/{osId}/finalizar`. A peça reservada é consumida.
+
+**15. Entregar o veículo** — `POST /api/ordens-servico/{osId}/entregar`.
+
+**16. Consultar novamente** — `GET /api/ordens-servico/{osId}/detalhes`. O status esperado é **`Entregue`**.
 
 As alterações de estado bem-sucedidas retornam, em geral, `204 No Content`; os cadastros retornam `201 Created`.
 
@@ -332,6 +341,7 @@ docker compose up -d --build  # Reconstruir e iniciar o ambiente
 - Para produção: desabilitar `DemoAuth`, integrar um provedor de identidade confiável, fornecer configuração JWT segura, usar HTTPS, proteger segredos e criar credenciais SQL com privilégios mínimos.
 - A aplicação de migrations via container foi projetada para o ambiente de demonstração; implantações de produção devem usar um processo de atualização de schema controlado.
 
----
 
+---
+**Documentação:** https://miro.com/app/board/uXjVEbdPNvM=/?share_link_id=994815917331 **Documentação no projeto**: docs/ddd
 **Repositório:** https://github.com/davidnunesv/oficina-mecanica · **Branch de desenvolvimento:** `dev`
