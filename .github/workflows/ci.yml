@@ -57,6 +57,18 @@ jobs:
 
           cat SecurityReport/nuget-vulnerabilities.json
 
+      - name: Generate readable vulnerability report
+        shell: bash
+        run: |
+          dotnet package list \
+            --project OficinaMecanica.slnx \
+            --no-restore \
+            --vulnerable \
+            --include-transitive \
+            --format console \
+            | tee SecurityReport/nuget-vulnerabilities.txt
+
+
       - name: Upload vulnerability report
         uses: actions/upload-artifact@v4
         with:
